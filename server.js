@@ -141,6 +141,11 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, message: "Backend is running" });
+});
+
+
 app.listen(PORT, () => {
   console.log(`Prime IT website running on http://localhost:${PORT}`);
 });
