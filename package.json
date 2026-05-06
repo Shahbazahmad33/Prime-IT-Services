@@ -5,7 +5,7 @@
   "description": "Prime IT Solutions website with contact API",
   "main": "server.js",
   "scripts": {
-    "start": "server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.6",
