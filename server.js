@@ -7,13 +7,14 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === "production";
+const runtimeEnv = isProduction ? "production" : "development";
+const corsOrigin = process.env.CORS_ORIGIN || "https://prime-it-services.vercel.app";
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// ✅ Enable CORS for your Vercel frontend
 app.use(cors({
-  origin: "https://prime-it-services.vercel.app/"
+  origin: corsOrigin
 }));
 
 function createTransporter() {
@@ -29,21 +30,19 @@ function createTransporter() {
   });
 }
 
-// ✅ Health check
 app.get("/api/health", async (req, res) => {
   const transporter = createTransporter();
   if (!transporter) {
-    return res.json({ ok: true, smtpConfigured: false, env: isProduction ? "production" : "development" });
+    return res.json({ ok: true, smtpConfigured: false, env: runtimeEnv });
   }
   try {
     await transporter.verify();
-    res.json({ ok: true, smtpConfigured: true, env: isProduction ? "production" : "development" });
+    res.json({ ok: true, smtpConfigured: true, env: runtimeEnv });
   } catch (error) {
-    res.json({ ok: true, smtpConfigured: false, env: isProduction ? "production" : "development", error: error.message });
+    res.json({ ok: true, smtpConfigured: false, env: runtimeEnv, error: error.message });
   }
 });
 
-// ✅ Contact form route
 app.post("/api/contact", async (req, res) => {
   try {
     const { name, email, message } = req.body || {};
@@ -85,7 +84,6 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-// ✅ Test email route
 app.post("/api/test-email", async (req, res) => {
   if (isProduction) {
     return res.status(403).json({ ok: false, error: "Disabled in production." });
@@ -99,7 +97,7 @@ app.post("/api/test-email", async (req, res) => {
     await transporter.sendMail({
       from: process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER,
       to: recipient,
-      subject: "Prime IT Website SMTP Test",
+      subject: "Prime IT Solutions Website SMTP Test",
       text: "SMTP test successful. Your contact form backend can send emails.",
       html: "<p><strong>SMTP test successful.</strong> Your contact form backend can send emails.</p>",
     });
@@ -109,11 +107,10 @@ app.post("/api/test-email", async (req, res) => {
   }
 });
 
-// ✅ Serve frontend last
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(PORT, () => {
-  console.log(`Prime IT website running on http://localhost:${PORT}`);
+  console.log(`Prime IT Solutions website running on http://localhost:${PORT}`);
 });
