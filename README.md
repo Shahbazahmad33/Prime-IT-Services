@@ -1,4 +1,4 @@
-# Prime IT Services Website
+# Prime IT Solutions Website
 
 A modern, responsive web application showcasing IT solutions and services.  
 Includes a secure contact form powered by **Node.js**, **Express**, and **Gmail SMTP integration**, with frontend built using **HTML, CSS, and JavaScript**.  
@@ -15,7 +15,7 @@ Includes a secure contact form powered by **Node.js**, **Express**, and **Gmail 
 ---
 
 ## 📂 Project Structure
-Prime-IT-Services/
+Prime-IT-Solutions/
 ├── index.html          # Frontend HTML
 ├── styles.css          # Styling
 ├── app.js              # Frontend JS
@@ -32,8 +32,8 @@ Prime-IT-Services/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Shahbazahmad33/Prime-IT-Services.git
-cd Prime-IT-Services
+git clone https://github.com/Shahbazahmad33/Prime-IT-Solutions.git
+cd Prime-IT-Solutions
 **2. Install dependencies**
 npm install
 
