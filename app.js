@@ -241,17 +241,18 @@ if (contactForm) {
         submitBtn.textContent = "Sending...";
       }
 
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: nameValue,
-          email: emailValue,
-          message: messageValue,
-        }),
-      });
+     const response = await fetch("https://prime-it-backend.up.railway.app/api/contact", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+        name: nameValue,
+        email: emailValue,
+        message: messageValue,
+    }),
+});
+
 
       const result = await response.json();
       if (!response.ok || !result.ok) {
