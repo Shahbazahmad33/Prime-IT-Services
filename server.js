@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname)));
 
 // ✅ Enable CORS for your Vercel frontend
 app.use(cors({
-  origin: "https://prime-it-frontend.vercel.app"
+  origin: "https://prime-it-services.vercel.app/"
 }));
 
 function createTransporter() {
