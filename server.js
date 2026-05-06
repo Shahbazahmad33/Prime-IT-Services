@@ -21,47 +21,25 @@ function createTransporter() {
   if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
     return null;
   }
-
   return nodemailer.createTransport({
     host: SMTP_HOST,
     port: Number(SMTP_PORT),
     secure: Number(SMTP_PORT) === 465,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
 }
 
-// ✅ Health check (only once)
+// ✅ Health check
 app.get("/api/health", async (req, res) => {
   const transporter = createTransporter();
-
   if (!transporter) {
-    return res.json({
-      ok: true,
-      service: "prime-it-contact-api",
-      smtpConfigured: false,
-      env: isProduction ? "production" : "development",
-    });
+    return res.json({ ok: true, smtpConfigured: false, env: isProduction ? "production" : "development" });
   }
-
   try {
     await transporter.verify();
-    res.json({
-      ok: true,
-      service: "prime-it-contact-api",
-      smtpConfigured: true,
-      env: isProduction ? "production" : "development",
-    });
+    res.json({ ok: true, smtpConfigured: true, env: isProduction ? "production" : "development" });
   } catch (error) {
-    res.json({
-      ok: true,
-      service: "prime-it-contact-api",
-      smtpConfigured: false,
-      env: isProduction ? "production" : "development",
-      error: error.message,
-    });
+    res.json({ ok: true, smtpConfigured: false, env: isProduction ? "production" : "development", error: error.message });
   }
 });
 
@@ -94,13 +72,11 @@ app.post("/api/contact", async (req, res) => {
       replyTo: cleanEmail,
       subject: `New Contact Form Message from ${cleanName}`,
       text: `Name: ${cleanName}\nEmail: ${cleanEmail}\n\nMessage:\n${cleanMessage}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${cleanName}</p>
-        <p><strong>Email:</strong> ${cleanEmail}</p>
-        <p><strong>Message:</strong></p>
-        <p>${cleanMessage.replace(/\n/g, "<br/>")}</p>
-      `,
+      html: `<h2>New Contact Form Submission</h2>
+             <p><strong>Name:</strong> ${cleanName}</p>
+             <p><strong>Email:</strong> ${cleanEmail}</p>
+             <p><strong>Message:</strong></p>
+             <p>${cleanMessage.replace(/\n/g, "<br/>")}</p>`,
     });
 
     return res.json({ ok: true });
@@ -114,15 +90,12 @@ app.post("/api/test-email", async (req, res) => {
   if (isProduction) {
     return res.status(403).json({ ok: false, error: "Disabled in production." });
   }
-
   try {
     const recipient = process.env.CONTACT_RECEIVER_EMAIL || process.env.SMTP_USER;
     const transporter = createTransporter();
-
     if (!recipient || !transporter) {
       return res.status(500).json({ ok: false, error: "SMTP is not fully configured." });
     }
-
     await transporter.sendMail({
       from: process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER,
       to: recipient,
@@ -130,7 +103,6 @@ app.post("/api/test-email", async (req, res) => {
       text: "SMTP test successful. Your contact form backend can send emails.",
       html: "<p><strong>SMTP test successful.</strong> Your contact form backend can send emails.</p>",
     });
-
     return res.json({ ok: true, message: "Test email sent successfully." });
   } catch (error) {
     return res.status(500).json({ ok: false, error: "Failed to send test email." });
@@ -145,4 +117,3 @@ app.get("*", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Prime IT website running on http://localhost:${PORT}`);
 });
-s
