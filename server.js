@@ -1,6 +1,7 @@
 const path = require("path");
 const express = require("express");
 const nodemailer = require("nodemailer");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
@@ -9,6 +10,11 @@ const isProduction = process.env.NODE_ENV === "production";
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
+
+// ✅ Enable CORS for your Vercel frontend
+app.use(cors({
+  origin: "https://prime-it-frontend.vercel.app"
+}));
 
 function createTransporter() {
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
@@ -19,7 +25,7 @@ function createTransporter() {
   return nodemailer.createTransport({
     host: SMTP_HOST,
     port: Number(SMTP_PORT),
-    secure: Number(SMTP_PORT) === 465, // true for SSL (465), false for TLS (587)
+    secure: Number(SMTP_PORT) === 465,
     auth: {
       user: SMTP_USER,
       pass: SMTP_PASS,
@@ -27,12 +33,7 @@ function createTransporter() {
   });
 }
 
-// app.use(cors({
-//   origin: "https://your-frontend-domain.com"
-// }));
-
-
-// ✅ Health check that verifies SMTP connection
+// ✅ Health check (only once)
 app.get("/api/health", async (req, res) => {
   const transporter = createTransporter();
 
@@ -46,7 +47,7 @@ app.get("/api/health", async (req, res) => {
   }
 
   try {
-    await transporter.verify(); // Nodemailer handshake
+    await transporter.verify();
     res.json({
       ok: true,
       service: "prime-it-contact-api",
@@ -136,17 +137,10 @@ app.post("/api/test-email", async (req, res) => {
   }
 });
 
-app.get("/api/health", (req, res) => {
-  res.json({ ok: true, message: "Backend is running" });
-});
-
-
-// ✅ Serve frontend
+// ✅ Serve frontend last
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
-
-
 
 app.listen(PORT, () => {
   console.log(`Prime IT website running on http://localhost:${PORT}`);
