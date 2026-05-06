@@ -136,14 +136,16 @@ app.post("/api/test-email", async (req, res) => {
   }
 });
 
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, message: "Backend is running" });
+});
+
+
 // ✅ Serve frontend
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.get("/api/health", (req, res) => {
-  res.json({ ok: true, message: "Backend is running" });
-});
 
 
 app.listen(PORT, () => {
